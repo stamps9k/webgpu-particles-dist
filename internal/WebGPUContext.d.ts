@@ -118,13 +118,32 @@ export declare class WebGPUContext {
      * Create all needed compute pipelines. Different number of pipelines are made
      * depending on the particle affect required.
      *
-     * @param device - The device that the piepline
+     * @param device - The device that the piepline is attached to.
      * @param shader_set - The effect that is being created
      * @param shaders_compiled - The shaders associated with the affect
      * @returns - a set of pipelines for the effect
      */
     private static create_compute_pipelines;
+    /**
+     *
+     * Create the render pipeline for the effect.
+     *
+     * @param device - the device the pipeline is attached to.
+     * @param shader_set - the Effect that is being created
+     * @param shaders_compiled - The shaders associated with the effect
+     * @returns - the render pipeline for the effect
+     */
     private static create_render_pipelines;
+    /**
+     * Creat the bind groups for the effect.
+     *
+     * @param device - The device that the bind groups attach to.
+     * @param shader_set- The effect that is being created.
+     * @param compute_pipelines - The compute pipelin(s) for the effect.
+     * @param render_pipelines - The render pipeline.
+     * @param buffers - The buffers for the effect.
+     * @returns a set of bind groups
+     */
     private static create_bind_groups;
     /**
      * Create the compute pipeline
@@ -134,7 +153,7 @@ export declare class WebGPUContext {
      * @param entryPoint - The shader entrypoint
      * @param layout - The GPUPipelineLayout
      * @param label - The name for the pipeline
-     * @returns the copmute pipeline
+     * @returns the compute pipeline
      */
     private static create_compute_pipeline;
     /**

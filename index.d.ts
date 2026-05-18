@@ -8,7 +8,7 @@ import { ParticleEngine } from "./public/ParticleEngine";
  */
 export declare function hello_particles(): string;
 /**
- * Initiliasize the system in preparation of use
+ * Initiliasize the system in preparation of use. Just a wrapper for the particle engine's init function.
  *
  * @param canvas - the canvas element to tie the particles to.
  * @param max_particles - the maximum number of particles to render.

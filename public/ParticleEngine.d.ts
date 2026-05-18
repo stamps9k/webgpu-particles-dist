@@ -41,12 +41,18 @@ export declare class ParticleEngine {
      *
      */
     context_check(): void;
+    /**
+     * Update the canvas on resize.
+     *
+     * @param canvas
+     */
     resize(canvas: HTMLCanvasElement): void;
     /**
      *
-     * Generate all the raw particle data for the initial set of particles
+     * Generate all the raw particle data and write to the GPU Buffer
      *
-     */
+       * @param particles - the particles to be buffered
+       */
     private buffer_particles;
     /**
      *
@@ -77,5 +83,4 @@ export declare class ParticleEngine {
      * @returns - The created ParticleEngine
      */
     static init(canvas: HTMLCanvasElement, effect: ParticleEffect, emitter_config: EmitterConfig, options?: WebGPUContextOptions): Promise<ParticleEngine>;
-    static normalize_shader_config(shader_set: string, shader_config: Record<string, string>): Record<string, string>;
 }

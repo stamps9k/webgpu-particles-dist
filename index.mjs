@@ -46,8 +46,19 @@ var ParticleType = /* @__PURE__ */ ((ParticleType2) => {
   return ParticleType2;
 })(ParticleType || {});
 
+// src/public/types/ValidationRule.ts
+function validate(value, rules) {
+  for (const rule of rules) {
+    if (!rule.check(value)) {
+      return { valid: false, message: rule.message };
+    }
+  }
+  return { valid: true };
+}
+
 // src/public/effects/ScatterFadeEffect.ts
 var ScatterFadeEffect = class _ScatterFadeEffect {
+  // #region --- The class properties ------------------------------------------
   MAX_PARTICLES;
   static rules = [
     {
@@ -59,9 +70,22 @@ var ScatterFadeEffect = class _ScatterFadeEffect {
       message: "Max particles must not exceed 100,000"
     }
   ];
+  // #endregion ----------------------------------------------------------------
+  /**
+   * The class constructor. Takes the user definable properties and returns an instance of the class
+   * 
+   * @param max_particles - The max number of particles for the effect
+   * @param rocket_number - The max number of rockets for the effect
+   */
   constructor(max_particles) {
     this.MAX_PARTICLES = max_particles;
   }
+  /**
+   * Generate all the particles for the intial buffering of the cpu.
+   * 
+   * @returns - An array of particles with random initial values
+   * 
+   */
   seed_particles() {
     return Array.from({ length: this.MAX_PARTICLES }, () => {
       const angle = Math.random() * Math.PI * 2;
@@ -78,15 +102,34 @@ var ScatterFadeEffect = class _ScatterFadeEffect {
       };
     });
   }
+  /**
+   * Get the various custom shader particle parameters
+   * 
+   * @returns an object representing the custom shader params.
+   */
   get_shader_params() {
     return { sp0: 0, sp1: 0, sp2: 0, sp3: 0, sp4: 0 };
   }
+  /**
+   * Getter for the max_particles property.
+   * 
+   * @returns - the maximum number of particles for the effect. 
+   */
   get_max_particles() {
     return this.MAX_PARTICLES;
   }
+  /**
+   * Fetch the name of the effect as a string
+   * 
+   */
   get_effect_name() {
     return "scatter-fade";
   }
+  /**
+   * Validate the object properties
+   * 
+   * @returns 
+   */
   validate() {
     return validate(this, _ScatterFadeEffect.rules);
   }
@@ -94,6 +137,7 @@ var ScatterFadeEffect = class _ScatterFadeEffect {
 
 // src/public/effects/FireworksEffect.ts
 var FireworksEffect = class _FireworksEffect {
+  // #region --- The class properties ------------------------------------------
   MAX_PARTICLES;
   LAUNCH_SPEED;
   SPARK_SPEED;
@@ -108,16 +152,33 @@ var FireworksEffect = class _FireworksEffect {
       message: "Max particles must not exceed 100,000"
     },
     {
-      check: (e) => e.LAUNCH_SPEED < 0,
+      check: (e) => e.ROCKET_COUNT <= e.MAX_PARTICLES / 2,
+      message: "Rocket count must not exceed 1/2 the max particles"
+    },
+    {
+      check: (e) => e.LAUNCH_SPEED > 0,
       message: "Lanuch Speed must be greater than 0"
     }
   ];
+  // #endregion ----------------------------------------------------------------
+  /**
+   * The class constructor. Takes the user definable properties and returns an instance of the class
+   * 
+   * @param max_particles - The max number of particles for the effect
+   * @param rocket_number - The max number of rockets for the effect
+   */
   constructor(max_particles, rocket_number) {
     this.MAX_PARTICLES = max_particles;
     this.ROCKET_COUNT = rocket_number;
     this.LAUNCH_SPEED = 400;
     this.SPARK_SPEED = 300;
   }
+  /**
+   * Generate all the particles for the intial buffering of the cpu.
+   * 
+   * @returns - An array of particles with random initial values
+   * 
+   */
   seed_particles() {
     return Array.from({ length: this.ROCKET_COUNT }, () => {
       const angle = Math.random() * Math.PI * 2;
@@ -134,6 +195,11 @@ var FireworksEffect = class _FireworksEffect {
       };
     });
   }
+  /**
+   * Get the various custom shader particle parameters
+   * 
+   * @returns an object representing the custom shader params.
+   */
   get_shader_params() {
     return {
       sp0: this.LAUNCH_SPEED,
@@ -148,12 +214,26 @@ var FireworksEffect = class _FireworksEffect {
       // - Unused
     };
   }
+  /**
+   * Getter for the max_particles property.
+   * 
+   * @returns - the maximum number of particles for the effect. 
+   */
   get_max_particles() {
     return this.MAX_PARTICLES;
   }
+  /**
+   * Fetch the name of the effect as a string
+   * 
+   */
   get_effect_name() {
     return "fireworks";
   }
+  /**
+   * Validate the object properties
+   * 
+   * @returns 
+   */
   validate() {
     return validate(this, _FireworksEffect.rules);
   }
@@ -161,6 +241,7 @@ var FireworksEffect = class _FireworksEffect {
 
 // src/public/effects/ScatterSwirlEffect.ts
 var ScatterSwirlEffect = class _ScatterSwirlEffect {
+  // #region --- The class properties ------------------------------------------
   MAX_PARTICLES;
   SPIN_STRENGTH;
   PULL_STRENGTH;
@@ -174,19 +255,31 @@ var ScatterSwirlEffect = class _ScatterSwirlEffect {
       message: "Max particles must not exceed 100,000"
     },
     {
-      check: (e) => e.SPIN_STRENGTH < 0,
+      check: (e) => e.SPIN_STRENGTH > 0,
       message: "Spin strength must be greater than 0"
     },
     {
-      check: (e) => e.PULL_STRENGTH < 0,
+      check: (e) => e.PULL_STRENGTH > 0,
       message: "Pull strength must be greater than 0"
     }
   ];
+  // #endregion ----------------------------------------------------------------
+  /**
+   * The class constructor. Takes the user definable properties and returns an instance of the class
+   * 
+   * @param max_particles - The max number of particles for the effect
+   */
   constructor(max_particles) {
     this.MAX_PARTICLES = max_particles;
     this.SPIN_STRENGTH = 150;
     this.PULL_STRENGTH = 30;
   }
+  /**
+   * Generate all the particles for the intial buffering of the cpu.
+   * 
+   * @returns - An array of particles with random initial values
+   * 
+   */
   seed_particles() {
     return Array.from({ length: this.MAX_PARTICLES }, () => {
       const angle = Math.random() * Math.PI * 2;
@@ -203,6 +296,11 @@ var ScatterSwirlEffect = class _ScatterSwirlEffect {
       };
     });
   }
+  /**
+   * Get the various custom shader particle parameters
+   * 
+   * @returns an object representing the custom shader params.
+   */
   get_shader_params() {
     return {
       sp0: this.SPIN_STRENGTH,
@@ -210,16 +308,33 @@ var ScatterSwirlEffect = class _ScatterSwirlEffect {
       sp1: this.PULL_STRENGTH,
       // - pull strength
       sp2: 0,
+      // - Unused
       sp3: 0,
+      // - Unused
       sp4: 0
+      // - Unused
     };
   }
+  /**
+   * Getter for the max_particles property.
+   * 
+   * @returns - the maximum number of particles for the effect. 
+   */
   get_max_particles() {
     return this.MAX_PARTICLES;
   }
+  /**
+   * Fetch the name of the effect as a string
+   * 
+   */
   get_effect_name() {
     return "scatter-swirl";
   }
+  /**
+   * Validate the object properties
+   * 
+   * @returns 
+   */
   validate() {
     return validate(this, _ScatterSwirlEffect.rules);
   }
@@ -549,7 +664,7 @@ var WebGPUContext = class _WebGPUContext {
    * Create all needed compute pipelines. Different number of pipelines are made
    * depending on the particle affect required.
    *
-   * @param device - The device that the piepline
+   * @param device - The device that the piepline is attached to.
    * @param shader_set - The effect that is being created
    * @param shaders_compiled - The shaders associated with the affect
    * @returns - a set of pipelines for the effect
@@ -585,6 +700,15 @@ var WebGPUContext = class _WebGPUContext {
     }
     return result;
   }
+  /**
+   * 
+   * Create the render pipeline for the effect.
+   * 
+   * @param device - the device the pipeline is attached to.
+   * @param shader_set - the Effect that is being created
+   * @param shaders_compiled - The shaders associated with the effect
+   * @returns - the render pipeline for the effect
+   */
   static create_render_pipelines(device, shader_set, shaders_compiled) {
     var result = {};
     switch (shader_set) {
@@ -597,6 +721,16 @@ var WebGPUContext = class _WebGPUContext {
     }
     return result;
   }
+  /**
+   * Creat the bind groups for the effect.
+   * 
+   * @param device - The device that the bind groups attach to.
+   * @param shader_set- The effect that is being created.
+   * @param compute_pipelines - The compute pipelin(s) for the effect.
+   * @param render_pipelines - The render pipeline.
+   * @param buffers - The buffers for the effect.
+   * @returns a set of bind groups
+   */
   static create_bind_groups(device, shader_set, compute_pipelines, render_pipelines, buffers) {
     var result = {};
     switch (shader_set) {
@@ -649,7 +783,7 @@ var WebGPUContext = class _WebGPUContext {
    * @param entryPoint - The shader entrypoint
    * @param layout - The GPUPipelineLayout
    * @param label - The name for the pipeline
-   * @returns the copmute pipeline
+   * @returns the compute pipeline
    */
   static create_compute_pipeline(device, shaders, entryPoint, layout = "auto", label) {
     if (!shaders["compute"]) {
@@ -719,6 +853,7 @@ var WebGPUContext = class _WebGPUContext {
 
 // src/public/ParticleEngine.ts
 var ParticleEngine = class _ParticleEngine {
+  // #region --- The class properties ------------------------------------------
   WORKGROUP_SIZE = 64;
   emitter;
   effect;
@@ -726,6 +861,7 @@ var ParticleEngine = class _ParticleEngine {
   ctx;
   particle_type;
   last_time = performance.now();
+  // #endregion ----------------------------------------------------------------
   /**
    *
    * Construct a new particle engine instance.
@@ -753,7 +889,7 @@ var ParticleEngine = class _ParticleEngine {
     requestAnimationFrame(this.animate_particles);
   }
   /**
-   *
+   * 
    * Handle each frame of animation tick.
    * Passed to requestAnimationFrame to drive the particle simulation loop.
    * Note use of arrow notation. This keeps this in scope at all times.
@@ -810,14 +946,20 @@ var ParticleEngine = class _ParticleEngine {
     pass.end();
     this.ctx.end_frame(encoder);
   }
+  /**
+   * Update the canvas on resize.
+   * 
+   * @param canvas 
+   */
   resize(canvas) {
     this.canvas = canvas;
   }
   /**
    *
-   * Generate all the raw particle data for the initial set of particles
+   * Generate all the raw particle data and write to the GPU Buffer
    *
-   */
+  * @param particles - the particles to be buffered 
+  */
   buffer_particles(particles) {
     const data = new Float32Array(this.effect.get_max_particles() * 12);
     for (let i = 0; i < this.effect.get_max_particles(); i++) {
@@ -948,6 +1090,10 @@ var ParticleEngine = class _ParticleEngine {
    * @returns - The created ParticleEngine
    */
   static async init(canvas, effect, emitter_config, options = {}) {
+    var valid_result = effect.validate();
+    if (!valid_result.valid) throw new Error(valid_result.message);
+    valid_result = emitter_config.validate();
+    if (!valid_result.valid) throw new Error(valid_result.message);
     const tmp_ctx = await WebGPUContext.init(canvas, options, effect);
     const result = new _ParticleEngine(
       canvas,
@@ -959,37 +1105,42 @@ var ParticleEngine = class _ParticleEngine {
     result.buffer_particles(particles);
     return result;
   }
-  static normalize_shader_config(shader_set, shader_config) {
-    switch (shader_set) {
-      case "scatter-fade":
-        if (shader_config["max-particles"] === void 0)
-          shader_config["max-particles"] = "500";
-        if (shader_config["emitter-shape"] === void 0)
-          shader_config["emitter-shape"] = "Rectangle";
-        break;
-      case "scatter-swirl":
-        if (shader_config["max-particles"] === void 0)
-          shader_config["max-particles"] = "500";
-        if (shader_config["emitter-shape"] === void 0)
-          shader_config["emitter-shape"] = "Rectangle";
-        break;
-      case "fireworks":
-        if (shader_config["max-particles"] === void 0)
-          shader_config["max-particles"] = "500";
-        if (shader_config["rocket-count"] === void 0)
-          shader_config["rocket-count"] = "5";
-        shader_config["emitter-shape"] = "Rectangle";
-        break;
-      default:
-        throw new Error("Unknown shader-set type");
-        break;
-    }
-    return shader_config;
-  }
+  /*
+   static normalize_shader_config(
+     shader_set: string,
+     shader_config: Record<string, string>,
+   ): Record<string, string> {
+     switch (shader_set) {
+       case "scatter-fade":
+         if (shader_config["max-particles"] === undefined)
+           shader_config["max-particles"] = "500";
+         if (shader_config["emitter-shape"] === undefined)
+           shader_config["emitter-shape"] = "Rectangle";
+         break;
+       case "scatter-swirl":
+         if (shader_config["max-particles"] === undefined)
+           shader_config["max-particles"] = "500";
+         if (shader_config["emitter-shape"] === undefined)
+           shader_config["emitter-shape"] = "Rectangle";
+         break;
+       case "fireworks":
+         if (shader_config["max-particles"] === undefined)
+           shader_config["max-particles"] = "500";
+         if (shader_config["rocket-count"] === undefined)
+           shader_config["rocket-count"] = "5";
+         shader_config["emitter-shape"] = "Rectangle";
+         break;
+       default:
+         throw new Error("Unknown shader-set type");
+         break;
+     }
+     return shader_config;
+   }*/
 };
 
 // src/public/EmitterConfig.ts
 var EmitterConfig = class _EmitterConfig {
+  // #region --- The class properties -----------------------------------------
   emitter_type;
   emitter_pos;
   emitter_p1;
@@ -1000,12 +1151,26 @@ var EmitterConfig = class _EmitterConfig {
       message: "Emitter type must be Rectangle, Circle or Point"
     }
   ];
+  // #endregion ---------------------------------------------------------------
+  /**
+   * The class constructor. Takes the user definable properties and returns an instance of the class
+   * 
+   * @param emitter_type - the type of the emitter
+   * @param emitter_pos - the position of the emitter
+   * @param emitter_p1 - Custom variable 1 for the emitter. Purpose depends on the shape.
+   * @param emitter_p2 - Custom variable 2 for the emitter. Purpose depends on the shape.
+   */
   constructor(emitter_type, emitter_pos, emitter_p1, emitter_p2) {
     this.emitter_type = emitter_type;
     this.emitter_pos = emitter_pos;
     this.emitter_p1 = emitter_p1;
     this.emitter_p2 = emitter_p2;
   }
+  /**
+   * Validate the object properties
+   * 
+   * @returns 
+   */
   validate() {
     return validate(this, _EmitterConfig.rules);
   }
@@ -1016,10 +1181,6 @@ function hello_particles() {
   return "particles ready changed \u{1F386}";
 }
 function init(canvas, particle_effect, emitter_config) {
-  var valid_result = particle_effect.validate();
-  if (!valid_result.valid) throw new Error(valid_result.message);
-  valid_result = emitter_config.validate();
-  if (!valid_result.valid) throw new Error(valid_result.message);
   return ParticleEngine.init(canvas, particle_effect, emitter_config);
 }
 export {

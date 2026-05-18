@@ -1,5 +1,6 @@
 import { Particle } from "../Particle";
 import { ShaderParams } from "../ShaderParams";
+/** Interface exposing standard functions that all Particle Effects must implement */
 export interface ParticleEffect {
     seed_particles(): Particle[];
     get_shader_params(): ShaderParams;
