@@ -7,10 +7,12 @@ import { ShaderParams } from "../ShaderParams";
  *
  */
 export declare class FireworksEffect implements ParticleEffect {
+    readonly kind: "FIREWORKS";
     private MAX_PARTICLES;
     private LAUNCH_SPEED;
     private SPARK_SPEED;
     private ROCKET_COUNT;
+    private ping_pong;
     private static rules;
     /**
      * The class constructor. Takes the user definable properties and returns an instance of the class
@@ -43,6 +45,11 @@ export declare class FireworksEffect implements ParticleEffect {
      *
      */
     get_effect_name(): string;
+    /**
+     * Check if the effect uses ping pong buffering or not. This is used by the engine to determine how to buffer the particles on the gpu.
+     * @returns - a boolean representing whether the effect uses ping pong buffering or not.
+     */
+    is_ping_pong(): boolean;
     /**
      * Validate the object properties
      *

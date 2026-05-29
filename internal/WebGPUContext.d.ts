@@ -1,5 +1,4 @@
-import { ParticleEffect } from "../public/effects/ParticleEffect";
-import { ShaderParams } from "../public/ShaderParams";
+import { UniformValues } from "./UniformValues";
 /** Custom options that the I may want to use */
 export interface WebGPUContextOptions {
     powerPreference?: GPUPowerPreference;
@@ -11,13 +10,8 @@ export declare class WebGPUContext {
     readonly device: GPUDevice;
     readonly context: GPUCanvasContext;
     readonly format: GPUTextureFormat;
-    readonly shader_set: string;
-    readonly shader_config: ShaderParams;
-    readonly shaders: Record<string, GPUShaderModule>;
-    readonly compute_pipelines: Record<string, GPUComputePipeline>;
-    readonly render_pipelines: Record<string, GPURenderPipeline>;
-    readonly bind_groups: Record<string, GPUBindGroup>;
-    private buffers;
+    private uniform_buffers;
+    private last_time;
     /**
      *
      * Construct a new particle engine instance.
@@ -46,7 +40,7 @@ export declare class WebGPUContext {
      * @param particle_stride - The stride of each particle
      * @returns
      */
-    static init(canvas: HTMLCanvasElement, options: WebGPUContextOptions | undefined, effect: ParticleEffect): Promise<WebGPUContext>;
+    static init(canvas: HTMLCanvasElement, options?: WebGPUContextOptions): Promise<WebGPUContext>;
     /**
      *
      * Return the current swap-chain texture view to use as the render target.
@@ -77,24 +71,6 @@ export declare class WebGPUContext {
      */
     end_frame(encoder: GPUCommandEncoder): void;
     /**
-     * Define everything to be used in the compute pass
-     *
-     * @param encoder - The encoder that will encode the commands
-     * @param uniform_data - The data that will be passed to the copmuter shader
-     * @param max_particles - The max number of particles to render
-     * @param workgroup_size - The size of each workgroup that the GPU processes
-     */
-    build_compute_pass(encoder: GPUCommandEncoder, uniform_data: Float32Array, max_particles: number, workgroup_size: number): void;
-    /**
-     *
-     * Define everything to be used in the render pass
-     *
-     * @param encoder - The encoder that will encode the commands
-     * @param uniform_data - The data that will be passed to the vertex shader
-     * @param max_particles - The max number of particles to render
-     */
-    build_render_pass(encoder: GPUCommandEncoder, uniform_data: Float32Array, max_particles: number): void;
-    /**
      *
      * Write some data the GPU's buffer
      *
@@ -102,73 +78,8 @@ export declare class WebGPUContext {
      * @param bufferOffset - How much to offset the write command
      * @param data - The data to write to the buffer
      */
-    write_buffer(buffer_name: string, bufferOffset: number | undefined, data: BufferSource): void;
+    write_buffer(canvas: HTMLCanvasElement, uniform_values: UniformValues): void;
+    get_uniform_buffers: () => Record<string, GPUBuffer>;
     /** Clean up the WebGPU context when finished */
     destroy(): void;
-    /**
-     *
-     * Dynamically load the particle engine shaders
-     *
-     * @param name - The name for the shader set
-     * @returns the shaders
-     */
-    private static load_shaders;
-    /**
-     *
-     * Create all needed compute pipelines. Different number of pipelines are made
-     * depending on the particle affect required.
-     *
-     * @param device - The device that the piepline is attached to.
-     * @param shader_set - The effect that is being created
-     * @param shaders_compiled - The shaders associated with the affect
-     * @returns - a set of pipelines for the effect
-     */
-    private static create_compute_pipelines;
-    /**
-     *
-     * Create the render pipeline for the effect.
-     *
-     * @param device - the device the pipeline is attached to.
-     * @param shader_set - the Effect that is being created
-     * @param shaders_compiled - The shaders associated with the effect
-     * @returns - the render pipeline for the effect
-     */
-    private static create_render_pipelines;
-    /**
-     * Creat the bind groups for the effect.
-     *
-     * @param device - The device that the bind groups attach to.
-     * @param shader_set- The effect that is being created.
-     * @param compute_pipelines - The compute pipelin(s) for the effect.
-     * @param render_pipelines - The render pipeline.
-     * @param buffers - The buffers for the effect.
-     * @returns a set of bind groups
-     */
-    private static create_bind_groups;
-    /**
-     * Create the compute pipeline
-     *
-     * @param device - The device the pipeline will run on
-     * @param shaders - The shaders the pipeline will use
-     * @param entryPoint - The shader entrypoint
-     * @param layout - The GPUPipelineLayout
-     * @param label - The name for the pipeline
-     * @returns the compute pipeline
-     */
-    private static create_compute_pipeline;
-    /**
-     *
-     * Create the render pipeline
-     *
-     * @param device - The device the pipeline will run on
-     * @param shaders - The shaders the pipeline will use
-     * @returns the render pipeline
-     */
-    private static create_render_pipeline;
-    /**
-     * Log any errors reported during shader creation
-     *
-     * @param shader - The shader to do error reporting for
-     */
-    private static log_shader_errors;
 }

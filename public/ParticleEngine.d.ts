@@ -1,15 +1,15 @@
 import { WebGPUContextOptions } from "../internal/WebGPUContext";
 import { ParticleEffect } from "./effects/ParticleEffect";
 import { EmitterConfig } from "./EmitterConfig";
+import { EmitterConfigPatch } from "./EmitterConfigPatch";
 /** Manages the WebGPU particle simulation lifecycle */
 export declare class ParticleEngine {
-    private WORKGROUP_SIZE;
-    private emitter;
-    private effect;
     private canvas;
     private ctx;
-    private particle_type;
+    private uniform_values;
+    private renderer;
     private last_time;
+    private paused;
     /**
      *
      * Construct a new particle engine instance.
@@ -27,6 +27,15 @@ export declare class ParticleEngine {
      *
      */
     start(): void;
+    pause(): void;
+    resume(): void;
+    /**
+     * Update the UniformValues with new emitter values
+     *
+     * @param emitter_config - The new emitter values to be used
+     *
+     */
+    update_emitter(emitter_config: EmitterConfigPatch): void;
     /**
      *
      * Handle each frame of animation tick.
@@ -47,30 +56,7 @@ export declare class ParticleEngine {
      * @param canvas
      */
     resize(canvas: HTMLCanvasElement): void;
-    /**
-     *
-     * Generate all the raw particle data and write to the GPU Buffer
-     *
-       * @param particles - the particles to be buffered
-       */
-    private buffer_particles;
-    /**
-     *
-     * Creates an emitter of a given shape for a given canvas.
-     *
-     * @param emitter_shape the shape of the emitter
-     * @param canvas the canvas the emitter will use
-     * @returns an emitter for particle drawing
-     */
-    private generate_emitter;
-    /**
-     *
-     * Convert the emitter object to a data format that can be ingested by the WebGPU Uniform Buffer.
-     *
-     * @returns the generated Emitter data ready to be passed into the WebGPU buffer
-     *
-     */
-    private generate_emitter_data;
+    private generate_uniform_values;
     /**
      *
      * Initilize the particle engine in preparation of use
