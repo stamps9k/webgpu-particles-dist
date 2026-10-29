@@ -1,0 +1,24 @@
+name: Notify particles demo site
+
+# Tells webgpu-particles-demo to rebuild its image whenever main changes.
+# SITE_DISPATCH_TOKEN is a fine-grained PAT with access to
+# stamps9k/webgpu-particles-demo, Contents: read and write.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send repository_dispatch to webgpu-particles-demo
+        env:
+          GH_TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
+        run: |
+          gh api repos/stamps9k/webgpu-particles-demo/dispatches \
+            -f event_type=particles-dist-updated \
+            -f "client_payload[sha]=${{ github.sha }}"
+
